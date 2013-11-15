@@ -21,7 +21,7 @@ setup(
     keywords="javascript routing js django templating",
     url="https://github.com/beldougie/django-js-utils",
     packages=['django_js_utils'],
-    long_description=read('README'),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
