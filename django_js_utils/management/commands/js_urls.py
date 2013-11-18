@@ -1,6 +1,6 @@
+import json
 import sys
 import re
-from django.core.serializers import json
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.core.management.base import BaseCommand
 from django.utils.datastructures import SortedDict
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         """
         js_patterns = SortedDict()
 
-        outputLoc = ''
+        # Updating property collection so end user can overwrite the settings
         if not project_settings.URLS_JS_GENERATED_FILE:
             outputLoc = app_settings.URLS_JS_GENERATED_FILE
         else:
@@ -40,32 +40,41 @@ class Command(BaseCommand):
         Load the module and output all of the patterns
         Recurse on the included modules
         """
+
         if isinstance(module_name, basestring):
             __import__(module_name)
             root_urls = sys.modules[module_name]
             patterns = root_urls.urlpatterns
-        else:
+        elif isinstance(module_name, object):
+            if hasattr(module_name, 'urlpatterns'):
+                patterns = module_name.urlpatterns
+
+        if not 'patterns' in locals():
             root_urls = module_name
             patterns = root_urls
 
-        for pattern in patterns:
-            if issubclass(pattern.__class__, RegexURLPattern):
-                if pattern.name:
-                    full_url = prefix + pattern.regex.pattern
-                    for chr in ["^","$"]:
-                        full_url = full_url.replace(chr, "")
-                    #handle kwargs, args
-                    kwarg_matches = RE_KWARG.findall(full_url)
-                    if kwarg_matches:
-                        for el in kwarg_matches:
-                            #prepare the output for JS resolver
-                            full_url = full_url.replace(el[0], "<%s>" % el[1])
-                    #after processing all kwargs try args
-                    args_matches = RE_ARG.findall(full_url)
-                    if args_matches:
-                        for el in args_matches:
-                            full_url = full_url.replace(el, "<>")#replace by a empty parameter name
-                    js_patterns[pattern.name] = "/" + full_url
-            elif issubclass(pattern.__class__, RegexURLResolver):
-                if pattern.urlconf_name:
-                    Command.handle_url_module(js_patterns, pattern.urlconf_name, prefix=pattern.regex.pattern)
+        try:
+            for pattern in patterns:
+                if issubclass(pattern.__class__, RegexURLPattern):
+                    if pattern.name:
+                        full_url = prefix + pattern.regex.pattern
+                        for chr in ["^","$"]:
+                            full_url = full_url.replace(chr, "")
+                        #handle kwargs, args
+                        kwarg_matches = RE_KWARG.findall(full_url)
+                        if kwarg_matches:
+                            for el in kwarg_matches:
+                                #prepare the output for JS resolver
+                                full_url = full_url.replace(el[0], "<%s>" % el[1])
+                        #after processing all kwargs try args
+                        args_matches = RE_ARG.findall(full_url)
+                        if args_matches:
+                            for el in args_matches:
+                                full_url = full_url.replace(el, "<>")#replace by a empty parameter name
+                        js_patterns[pattern.name] = "/" + full_url
+                elif issubclass(pattern.__class__, RegexURLResolver):
+                    if pattern.urlconf_name:
+                        Command.handle_url_module(js_patterns, pattern.urlconf_name, prefix=pattern.regex.pattern)
+        except TypeError:
+            print "couldn't iterate over patterns"
+            print patterns
