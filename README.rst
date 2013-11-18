@@ -39,7 +39,7 @@ Usage
 *****
 1. To generate a list of all available urls in the special
 format::
-    >>> python manage.js js_urls
+    >>> python manage.py js_urls
 
 To keep the list of urls up-to-date, it is recommended to include this command as part of the build process.
 
