@@ -13,18 +13,22 @@ def read(fname):
 setup(
     name="django_js_utils",
     version="0.2",
-    author="Matt Keeble",
-    author_email="mattkeeble@gmail.com",
+    author="Dimitri Gnidash, Matt Keeble",
+    author_email="dimitri.gnidash@gmail.com, matt.keeble@gmail.com",
     description=("dutils is a small utility library that aims to provide JavaScript/Django developers with a few "
                  "utilities that will help the development of RIA on top of a Django Backend."),
-    license="BSD",
+    license="MIT",
     keywords="javascript routing js django templating",
-    url="https://github.com/beldougie/django-js-utils",
+    url="https://github.com/Dimitri-Gnidash/django-js-utils",
     packages=find_packages(),
+    include_package_data = True,
+    package_data = {
+        'static/js': ['*.js']
+    },
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: MIT License",
     ],
 )
