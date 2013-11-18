@@ -1,9 +1,8 @@
 import sys
 import re
-
+from django.core.serializers import json
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.core.management.base import BaseCommand
-from django.utils import simplejson
 from django.utils.datastructures import SortedDict
 from django.conf import settings as project_settings
 
@@ -32,7 +31,7 @@ class Command(BaseCommand):
         #output to the file
         urls_file = open(app_settings.URLS_JS_GENERATED_FILE, "w")
         urls_file.write("dutils.conf.urls = ")
-        simplejson.dump(js_patterns, urls_file)
+        json.dump(js_patterns, urls_file)
         print "Done generating Javascript urls file %s" % app_settings.URLS_JS_GENERATED_FILE
     
     @staticmethod
