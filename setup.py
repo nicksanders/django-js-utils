@@ -20,7 +20,7 @@ setup(
     license="BSD",
     keywords="javascript routing js django templating",
     url="https://github.com/beldougie/django-js-utils",
-    packages=['django_js_utils'],
+    packages=find_packages()
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
