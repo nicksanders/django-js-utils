@@ -1,1 +1,1 @@
-include dutils.js
+include django_js_utils/static/js/dutils.js
