@@ -42,6 +42,10 @@ Installation
     <script src="{{ STATIC_URL }}js/dutils.js"></script>
     <script src="{{ STATIC_URL }}js/django-urls.js"></script>
 
+Note: Obtaining the correct dutils.js file should be as simple as running:
+
+    python manage.py collectstatic
+
 Usage
 *****
 1. To generate a list of all available urls in the special
