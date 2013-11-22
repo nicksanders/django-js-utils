@@ -31,6 +31,8 @@ class Command(BaseCommand):
         urls_file = open(URLS_JS_GENERATED_FILE, "w")
         urls_file.write("dutils.conf.urls = ")
         json.dump(js_patterns, urls_file)
+        urls_file.write(";")
+        urls_file.close()
         print "Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE
     
     @staticmethod
