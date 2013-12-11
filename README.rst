@@ -39,8 +39,8 @@ Installation
 4. Add dutils.js and urls routing Javascript file to every web page where you plan to use the reverse function
 (likely just include in your base.html template), e.g.::
 
-    <script src="{{ STATIC_URL }}js/dutils.js"></script>
-    <script src="{{ STATIC_URL }}js/django-urls.js"></script>
+    <script src="{% static 'js/dutils.js' %}"></script>
+    <script src="{% static 'js/django-urls.js' %}"></script>
 
 Note: Obtaining the correct dutils.js file should be as simple as running:
 
