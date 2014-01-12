@@ -6,8 +6,7 @@ from setuptools import setup, find_packages
 
 
 def read(*parts):
-    file_content =  codecs.open(path.join(path.dirname(__file__), *parts)).read()
-    
+    file_content =  codecs.open(path.join(path.dirname(__file__), *parts)).read() 
     py2 = sys.version_info < (3, 0)
 
     if not py2:
