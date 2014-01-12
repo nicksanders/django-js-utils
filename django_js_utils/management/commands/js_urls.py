@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import re
 from django.core.exceptions import ImproperlyConfigured
@@ -25,13 +27,13 @@ class Command(BaseCommand):
             raise ImproperlyConfigured('You should provide URLS_JS_GENERATED_FILE setting.')
 
         js_patterns = SortedDict()
-        print "Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE
+        print("Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
         Command.handle_url_module(js_patterns, settings.ROOT_URLCONF)
         #output to the file
         urls_file = open(URLS_JS_GENERATED_FILE, "w")
         urls_file.write("dutils.conf.urls = ")
         simplejson.dump(js_patterns, urls_file)
-        print "Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE
+        print("Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
     
     @staticmethod
     def handle_url_module(js_patterns, module_name, prefix=""):
@@ -39,7 +41,7 @@ class Command(BaseCommand):
         Load the module and output all of the patterns
         Recurse on the included modules
         """
-        if isinstance(module_name, basestring):
+        if isinstance(module_name, str):
             __import__(module_name)
             root_urls = sys.modules[module_name]
             patterns = root_urls.urlpatterns
