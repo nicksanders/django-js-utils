@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import json
 import sys
 import re
@@ -25,7 +27,7 @@ class Command(BaseCommand):
             raise ImproperlyConfigured('You should provide URLS_JS_GENERATED_FILE setting.')
 
         js_patterns = SortedDict()
-        print "Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE
+        print("Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
         Command.handle_url_module(js_patterns, settings.ROOT_URLCONF)
         #output to the file
         urls_file = open(URLS_JS_GENERATED_FILE, "w")
@@ -33,7 +35,7 @@ class Command(BaseCommand):
         json.dump(js_patterns, urls_file)
         urls_file.write(";")
         urls_file.close()
-        print "Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE
+        print("Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
 
     @staticmethod
     def handle_url_module(js_patterns, module_name, prefix=""):
@@ -42,7 +44,7 @@ class Command(BaseCommand):
         Recurse on the included modules
         """
 
-        if isinstance(module_name, basestring):
+        if isinstance(module_name, str):
             print('%s: %s' % (module_name, prefix))
             __import__(module_name)
             root_urls = sys.modules[module_name]
@@ -85,5 +87,5 @@ class Command(BaseCommand):
                     Command.handle_url_module(js_patterns, pattern.urlconf_name,
                                               prefix=prefix + pattern.regex.pattern)
         except TypeError:
-            print "couldn't iterate over patterns"
-            print patterns
+            print("Couldn't iterate over patterns")
+            print(patterns)

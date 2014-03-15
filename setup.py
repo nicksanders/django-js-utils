@@ -1,11 +1,18 @@
 import codecs
 import re
 from os import path
+import sys
 from setuptools import setup, find_packages
 
 
 def read(*parts):
-    return codecs.open(path.join(path.dirname(__file__), *parts)).read()
+    file_content =  codecs.open(path.join(path.dirname(__file__), *parts)).read() 
+    py2 = sys.version_info < (3, 0)
+
+    if not py2:
+        file_content = file_content.decode("utf-8")
+    
+    return file_content
 
 
 def find_version(*file_paths):
