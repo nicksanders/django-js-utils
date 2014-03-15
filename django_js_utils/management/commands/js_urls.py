@@ -1,17 +1,17 @@
 import json
 import sys
 import re
-from django.core.exceptions import ImproperlyConfigured
+from types import ModuleType
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.core.management.base import BaseCommand
 from django.utils.datastructures import SortedDict
 from django.conf import settings
 
 
-
-RE_KWARG = re.compile(r"(\(\?P\<(.*?)\>.*?\))") #Pattern for recongnizing named parameters in urls
-RE_ARG = re.compile(r"(\(.*?\))") #Pattern for recognizing unnamed url parameters
+RE_KWARG = re.compile(r"(\(\?P\<(.*?)\>.*?\))")  # Pattern for named parameters in urls
+RE_ARG = re.compile(r"(\(.*?\))")  # Pattern for recognizing unnamed url parameters
 
 
 class Command(BaseCommand):
@@ -47,13 +47,16 @@ class Command(BaseCommand):
             __import__(module_name)
             root_urls = sys.modules[module_name]
             patterns = root_urls.urlpatterns
+        elif isinstance(module_name, ModuleType):
+            root_urls = module_name
+            patterns = root_urls.urlpatterns
         elif isinstance(module_name, object):
             if hasattr(module_name, 'urlpatterns'):
                 print('module %s: %s' % (module_name.__name__, prefix))
                 patterns = module_name.urlpatterns
-
-        if not 'patterns' in locals():
-            patterns = module_name
+        else:
+            root_urls = module_name
+            patterns = root_urls
 
         try:
             for pattern in patterns:
@@ -61,7 +64,7 @@ class Command(BaseCommand):
                     if not pattern.name:
                         continue
                     full_url = prefix + pattern.regex.pattern
-                    for chr in ["^","$"]:
+                    for chr in ["^", "$"]:
                         full_url = full_url.replace(chr, "")
                     # Handle kwargs, args
                     kwarg_matches = RE_KWARG.findall(full_url)
