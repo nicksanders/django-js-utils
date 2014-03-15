@@ -56,7 +56,8 @@ class Command(BaseCommand):
             if hasattr(module_name, 'urlpatterns'):
                 print('module %s: %s' % (module_name.__name__, prefix))
                 patterns = module_name.urlpatterns
-        else:
+
+        if not 'patterns' in locals():
             root_urls = module_name
             patterns = root_urls
 
