@@ -27,9 +27,13 @@ class Command(BaseCommand):
             raise ImproperlyConfigured('You should provide URLS_JS_GENERATED_FILE setting.')
 
         js_patterns = SortedDict()
-        print("Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
 
-        Command.handle_url_module(js_patterns, settings.ROOT_URLCONF)
+        verbosity = int(options['verbosity'])
+        if verbosity > 0:
+            print("Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
+
+        Command.handle_url_module(
+            js_patterns, settings.ROOT_URLCONF, verbosity=verbosity)
 
         #output to the file
         urls_file = open(URLS_JS_GENERATED_FILE, "w")
@@ -38,10 +42,11 @@ class Command(BaseCommand):
         urls_file.write(";")
         urls_file.close()
 
-        print("Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
+        if verbosity > 0:
+            print("Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
 
     @staticmethod
-    def handle_url_module(js_patterns, module_name, prefix=""):
+    def handle_url_module(js_patterns, module_name, prefix="", verbosity=1):
         """
         Load the module and output all of the patterns
         Recurse on the included modules
@@ -52,19 +57,21 @@ class Command(BaseCommand):
             URLS_JS_I18N = settings.URLS_JS_I18N
 
         if isinstance(module_name, str):
-            print('%s: %s' % (module_name, prefix))
+            if verbosity > 2:
+                print('(str) %s: %s ' % (module_name, prefix))
             __import__(module_name)
             root_urls = sys.modules[module_name]
             patterns = root_urls.urlpatterns
-        elif isinstance(module_name, ModuleType):
+
+        elif isinstance(module_name, ModuleType) and hasattr(module_name, 'urlpatterns'):
+            if verbosity > 2:
+                print('(ModuleType) %s: %s' % (module_name, prefix))
             root_urls = module_name
             patterns = root_urls.urlpatterns
-        elif isinstance(module_name, object):
-            if hasattr(module_name, 'urlpatterns'):
-                print('module %s: %s' % (module_name.__name__, prefix))
-                patterns = module_name.urlpatterns
 
         if not 'patterns' in locals():
+            if verbosity > 2:
+                print('%s: %s' % (module_name, prefix))
             root_urls = module_name
             patterns = root_urls
 
@@ -102,7 +109,8 @@ class Command(BaseCommand):
                     if not pattern.urlconf_name:
                         continue
                     Command.handle_url_module(js_patterns, pattern.urlconf_name,
-                                              prefix=prefix + pattern.regex.pattern)
+                                              prefix=prefix + pattern.regex.pattern,
+                                              verbosity=verbosity)
         except TypeError:
             print("Couldn't iterate over patterns")
             print(patterns)
