@@ -28,13 +28,16 @@ class Command(BaseCommand):
 
         js_patterns = SortedDict()
         print("Generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
+
         Command.handle_url_module(js_patterns, settings.ROOT_URLCONF)
+
         #output to the file
         urls_file = open(URLS_JS_GENERATED_FILE, "w")
         urls_file.write("dutils.conf.urls = ")
         json.dump(js_patterns, urls_file)
         urls_file.write(";")
         urls_file.close()
+
         print("Done generating Javascript urls file %s" % URLS_JS_GENERATED_FILE)
 
     @staticmethod
@@ -43,6 +46,10 @@ class Command(BaseCommand):
         Load the module and output all of the patterns
         Recurse on the included modules
         """
+
+        URLS_JS_I18N = None
+        if hasattr(settings, 'URLS_JS_I18N'):
+            URLS_JS_I18N = settings.URLS_JS_I18N
 
         if isinstance(module_name, str):
             print('%s: %s' % (module_name, prefix))
@@ -64,24 +71,33 @@ class Command(BaseCommand):
         try:
             for pattern in patterns:
                 if issubclass(pattern.__class__, RegexURLPattern):
+
                     if not pattern.name:
                         continue
+
                     full_url = prefix + pattern.regex.pattern
                     for chr in ["^", "$"]:
                         full_url = full_url.replace(chr, "")
+
                     # Handle kwargs, args
                     kwarg_matches = RE_KWARG.findall(full_url)
                     if kwarg_matches:
                         for el in kwarg_matches:
                             ## Prepare the output for JS resolver
                             full_url = full_url.replace(el[0], "<%s>" % el[1])
+
                     #after processing all kwargs try args
                     args_matches = RE_ARG.findall(full_url)
                     if args_matches:
                         for el in args_matches:
                             ## Replace by a empty parameter name
                             full_url = full_url.replace(el, "<>")
+
+                    if URLS_JS_I18N and full_url.startswith('en-us'):
+                        full_url = full_url.replace('en-us', '<language_code>')
+
                     js_patterns[pattern.name] = "/" + full_url
+
                 elif issubclass(pattern.__class__, RegexURLResolver):
                     if not pattern.urlconf_name:
                         continue

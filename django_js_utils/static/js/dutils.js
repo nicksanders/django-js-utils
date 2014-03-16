@@ -15,6 +15,15 @@ dutils.urls = function(){
 
         var _path = path;
 
+        if (path.indexOf('/<language_code>') == 0) {
+            var pathArray = window.location.pathname.split('/');
+            if (pathArray.length > 1) {
+                path = path.replace('<language_code>', pathArray[1]);
+            } else {
+                path = path.replace('/<language_code>', '');
+            }
+        }
+
         var key;
         for (key in kwargs)
         {
