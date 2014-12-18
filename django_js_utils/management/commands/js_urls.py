@@ -82,6 +82,10 @@ class Command(BaseCommand):
                     if not pattern.name:
                         continue
 
+                    key = pattern.name
+                    if prefix == '^admin/':
+                        key = 'admin:' + key
+
                     full_url = prefix + pattern.regex.pattern
                     for chr in ["^", "$"]:
                         full_url = full_url.replace(chr, "")
@@ -103,7 +107,7 @@ class Command(BaseCommand):
                     if URLS_JS_I18N and full_url.startswith('en-us'):
                         full_url = full_url.replace('en-us', '<language_code>')
 
-                    js_patterns[pattern.name] = "/" + full_url
+                    js_patterns[key] = "/" + full_url
 
                 elif issubclass(pattern.__class__, RegexURLResolver):
                     if not pattern.urlconf_name:
