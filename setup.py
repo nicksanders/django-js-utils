@@ -6,19 +6,18 @@ from setuptools import setup, find_packages
 
 
 def read(*parts):
-    file_content =  codecs.open(path.join(path.dirname(__file__), *parts)).read() 
+    file_content = codecs.open(path.join(path.dirname(__file__), *parts)).read()
     py2 = sys.version_info < (3, 0)
 
-    if not py2:
+    if not py2 and not isinstance(file_content, str):
         file_content = file_content.decode("utf-8")
-    
+
     return file_content
 
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-        version_file, re.M)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
@@ -27,13 +26,11 @@ def find_version(*file_paths):
 setup(
     name='django-js-utils',
     version=find_version("django_js_utils", "__init__.py"),
-    description='Small utility Django app that aims to provide JavaScript/Django developers with a few utilities that will help the development of RIA on top of a Django Backend',
+    description='Small utility Django app that aims to provide JavaScript/Django developers with a few utilities \
+    that will help the development of RIA on top of a Django Backend',
     long_description=read('README.rst'),
     author='Dimitri-Gnidash',
-#    author_email='',
     maintainer='Dimitri-Gnidash',
-#    maintainer_email='',
-#    url='',
     packages=find_packages(),
     include_package_data=True,
     package_data={
@@ -52,8 +49,5 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Utilities',
-        ],
-#    install_requires=[
-#
-#        ],
+    ],
 )
