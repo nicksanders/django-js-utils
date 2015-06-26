@@ -4,11 +4,11 @@ import json
 import sys
 import re
 from types import ModuleType
+from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.core.management.base import BaseCommand
-from django.utils.datastructures import SortedDict
 from django.conf import settings
 
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         except:
             raise ImproperlyConfigured('You should provide URLS_JS_GENERATED_FILE setting.')
 
-        js_patterns = SortedDict()
+        js_patterns = OrderedDict()
 
         verbosity = int(options['verbosity'])
         if verbosity > 0:
